@@ -1,7 +1,11 @@
-import mongoose from "mongoose";
+import { model, Schema, Model, Document } from 'mongoose';
 
-const vehicleSchema = new mongoose.Schema({
+export interface IVehicle extends Document {
     name: String
+}
+
+const VehicleSchema: Schema<IVehicle> = new Schema({
+    name: {type: String, required: true},
 });
 
-export const Vehicle = mongoose.model('Vehicle', vehicleSchema);
+export const Vehicle: Model<IVehicle> = model('Vehicle', VehicleSchema);

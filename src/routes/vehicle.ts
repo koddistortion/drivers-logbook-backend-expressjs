@@ -1,11 +1,14 @@
 import express from "express";
 
-const router = express.Router();
+const tmpRouter = express.Router();
 
 import vehicleController from "../controllers/vehicleController";
+import {postVehicleValidation} from "../validators/vehicleValidators";
 
-router.get('/', vehicleController.getAllVehicles);
-router.post('/', vehicleController.createVehicle);
-router.get('/:id', vehicleController.getVehicle);
+tmpRouter.get('/', vehicleController.getVehicles);
+tmpRouter.get('/:id', vehicleController.getVehicle);
+tmpRouter.delete('/:id', vehicleController.deleteVehicle);
+tmpRouter.post('/', postVehicleValidation(), vehicleController.postVehicle);
+tmpRouter.patch('/:id', vehicleController.patchVehicle);
 
-export default router;
+export const router = tmpRouter;
