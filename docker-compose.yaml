@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:latest
+    hostname: mongo
+    container_name: mongo-drivejournal
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data-volume:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGO_INITDB_DATABASE=drivejournal-backend
+volumes:
+  mongo-data-volume:
