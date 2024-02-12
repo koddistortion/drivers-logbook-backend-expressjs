@@ -5,10 +5,14 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "lint": "eslint \"src/**\"",
+    "prettier:base": "prettier --parser typescript --single-quote",
+    "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
+    "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\"",
+    "prepare": "husky"
   },
   "dependencies": {
-    "@types/dotenv": "^8.2.0",
     "cookie-parser": "~1.4.4",
     "dotenv": "^16.4.1",
     "envalid": "^8.0.0",
@@ -21,11 +25,15 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.6",
     "@types/express": "^4.17.21",
-    "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.16",
+    "eslint": "^8.56.0",
+    "husky": "^9.0.10",
     "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
+    "pretty-quick": "^4.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^7.0.0"
   }
 }
