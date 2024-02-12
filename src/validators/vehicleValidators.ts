@@ -1,11 +1,10 @@
-import {checkSchema} from "express-validator";
+import { checkSchema } from "express-validator";
 
-export const postVehicleValidation = () => checkSchema(
-    {
-        name: {
-            isString: true,
-            trim: true,
-            notEmpty: true
-        }
-    }
-);
+export const postVehicleValidation = () =>
+  checkSchema({
+    name: {
+      isString: true,
+      trim: true,
+      notEmpty: true,
+    },
+  });
