@@ -1,74 +1,46 @@
 import asyncHandler from "express-async-handler";
 import { validationResult } from "express-validator";
 
-import { VehicleDto, Vehicle } from "../models/vehicle";
-import { NotFoundError } from "../errors/400/notFoundError";
+import { VehicleDto } from "../models/vehicle";
 import { ValidationFailedError } from "../errors/400/validationFailedError";
+import { VehicleService } from "../services/vehicleService";
 
 const getVehicles = asyncHandler(async (_req, res) => {
-  const vehicles = await Vehicle.find({}).exec();
-  res.json(vehicles);
+  await VehicleService.getAllVehicles().then((vehicles) => {
+    return res.status(200).json(vehicles);
+  });
 });
 
-const getVehicle = asyncHandler((req, res, next) => {
+const getVehicle = asyncHandler(async (req, res) => {
   const vehicleId = req.params.id;
-  Vehicle.findById(vehicleId)
-    .then((vehicle) => {
-      if (vehicle == null) {
-        throw new NotFoundError("Vehicle not found");
-      }
-      return res.json(vehicle);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  await VehicleService.getVehicle(vehicleId).then((vehicles) => {
+    return res.status(200).json(vehicles);
+  });
 });
 
-const postVehicle = asyncHandler((req, res, next) => {
-  const vehicle = new Vehicle();
+const postVehicle = asyncHandler(async (req, res) => {
   const result = validationResult(req);
   if (!result.isEmpty()) {
     throw new ValidationFailedError(result.array(), req.body);
   }
-  vehicle.name = req.body.name;
-  vehicle.brand = req.body.brand;
-  vehicle
-    .save()
-    .then((_ignore) => {
-      return res.status(201).json(vehicle);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  await VehicleService.saveVehicle(req.body).then((vehicle) => {
+    return res.status(201).json(vehicle);
+  });
 });
 
-const deleteVehicle = asyncHandler((req, res, next) => {
+const deleteVehicle = asyncHandler(async (req, res) => {
   const vehicleId = req.params.id;
-  Vehicle.findByIdAndDelete(vehicleId)
-    .then((vehicle) => {
-      if (vehicle == null) {
-        throw new NotFoundError("Vehicle not found");
-      }
-      return res.status(200).json(vehicle);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  await VehicleService.deleteVehicle(vehicleId).then((driver) => {
+    return res.status(200).json(driver);
+  });
 });
 
-const patchVehicle = asyncHandler(async (req, res, next) => {
+const patchVehicle = asyncHandler(async (req, res) => {
   const vehicleId = req.params.id;
   const vehicleData: VehicleDto = req.body;
-  await Vehicle.findByIdAndUpdate(vehicleId, vehicleData, { new: true })
-    .then((vehicle) => {
-      if (vehicle == null) {
-        throw new NotFoundError(`Vehicle with id '${vehicleId}' not found!`);
-      }
-      return res.send(vehicle);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  await VehicleService.updateVehicle(vehicleId, vehicleData).then((driver) => {
+    res.status(200).json(driver);
+  });
 });
 
 export default {
