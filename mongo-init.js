@@ -4,7 +4,7 @@ db.createUser({
   roles: [
     {
       role: 'dbOwner',
-      db: 'driverslogbook-backend',
+      db: 'drivers-logbook-backend',
     }
   ],
 });

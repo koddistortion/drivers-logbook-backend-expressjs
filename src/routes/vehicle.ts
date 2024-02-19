@@ -1,14 +1,15 @@
 import express from "express";
 
-const tmpRouter = express.Router();
-
 import vehicleController from "../controllers/vehicleController";
-import { postVehicleValidation } from "../validators/vehicleValidators";
+import {postVehicleValidation} from "../validators/vehicleValidators";
+import {MongoIdCheck} from "../middlewares/mongo";
 
-tmpRouter.get("/", vehicleController.getVehicles);
-tmpRouter.get("/:id", vehicleController.getVehicle);
-tmpRouter.delete("/:id", vehicleController.deleteVehicle);
-tmpRouter.post("/", postVehicleValidation(), vehicleController.postVehicle);
-tmpRouter.patch("/:id", vehicleController.patchVehicle);
+const router = express.Router();
 
-export const router = tmpRouter;
+router.get('/', vehicleController.getVehicles);
+router.get('/:id', MongoIdCheck("id"), vehicleController.getVehicle);
+router.delete('/:id', MongoIdCheck("id"), vehicleController.deleteVehicle);
+router.post('/', postVehicleValidation(), vehicleController.postVehicle);
+router.patch('/:id', MongoIdCheck("id"), vehicleController.patchVehicle);
+
+export const vehicleRouter = router;

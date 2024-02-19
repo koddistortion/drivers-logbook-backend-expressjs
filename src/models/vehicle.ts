@@ -1,11 +1,31 @@
-import { model, Schema, Model, Document } from "mongoose";
+import {model, Schema, Model, Document, Types} from 'mongoose';
+import {DriverDto} from "./driver";
 
-export interface IVehicle extends Document {
-  name: string;
+export interface VehicleDto extends Document {
+    name: String,
+    brand: String,
+    favoriteDriver: Types.ObjectId | DriverDto,
 }
 
-const VehicleSchema: Schema<IVehicle> = new Schema({
-  name: { type: String, required: true },
+const VehicleSchema: Schema<VehicleDto> = new Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    brand: {
+        type: String,
+        required: true
+    },
+    favoriteDriver: {
+        type: Types.ObjectId,
+        ref: 'Driver',
+        required: false
+    }
 });
 
-export const Vehicle: Model<IVehicle> = model("Vehicle", VehicleSchema);
+VehicleSchema.methods.fromDto = function (dto: VehicleDto) {
+    this.name = dto.name;
+    this.brand = dto.brand
+}
+
+export const Vehicle: Model<VehicleDto> = model('Vehicle', VehicleSchema);

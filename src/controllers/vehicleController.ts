@@ -1,71 +1,74 @@
 import asyncHandler from "express-async-handler";
-import { validationResult } from "express-validator";
-import mongoose from "mongoose";
+import {validationResult} from "express-validator";
 
-import { IVehicle, Vehicle } from "../models/vehicle";
-import { NotFoundError } from "../errors/400/notFoundError";
-import { InvalidIdError } from "../errors/400/invalidIdError";
-import { ValidationFailedError } from "../errors/400/validationFailedError";
+import {VehicleDto, Vehicle} from "../models/vehicle";
+import {NotFoundError} from '../errors/400/notFoundError';
+import {ValidationFailedError} from "../errors/400/validationFailedError";
 
 const getVehicles = asyncHandler(async (_req, res) => {
-  const vehicles = await Vehicle.find({}).exec();
-  res.json(vehicles);
+    const vehicles = await Vehicle.find({}).exec();
+    res.json(vehicles);
 });
 
-const getVehicle = asyncHandler(async (req, res) => {
-  const vehicleId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(vehicleId)) {
-    throw new InvalidIdError(vehicleId);
-  }
-  const vehicle = await Vehicle.findById(vehicleId);
-  if (vehicle == null) {
-    throw new NotFoundError("Vehicle not found");
-  }
-  res.json(vehicle);
+const getVehicle = asyncHandler(async (req, res, next) => {
+    const vehicleId = req.params.id;
+    Vehicle.findById(vehicleId).then(vehicle => {
+        if (vehicle == null) {
+            throw new NotFoundError("Vehicle not found");
+        }
+        return res.json(vehicle);
+    }).catch(err => {
+        next(err);
+    });
 });
 
-const postVehicle = asyncHandler(async (req, res) => {
-  const vehicle = new Vehicle();
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    throw new ValidationFailedError(result.array(), req.body);
-  }
-  vehicle.name = req.body.name;
-  await vehicle.save();
-  res.status(201).json(vehicle);
+const postVehicle = asyncHandler(async (req, res, next) => {
+    const vehicle = new Vehicle();
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        throw new ValidationFailedError(result.array(), req.body);
+    }
+    vehicle.name = req.body.name;
+    vehicle.brand = req.body.brand;
+    vehicle.save().then(_ignore => {
+        return res.status(201).json(vehicle);
+    }).catch(err => {
+        next(err);
+    });
+
 });
 
-const deleteVehicle = asyncHandler(async (req, res) => {
-  const vehicleId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(vehicleId)) {
-    throw new InvalidIdError(vehicleId);
-  }
-  const vehicle = await Vehicle.findByIdAndDelete(vehicleId);
-  if (vehicle == null) {
-    throw new NotFoundError("Vehicle not found");
-  }
-  res.status(200).json(vehicle);
-});
+const deleteVehicle = asyncHandler(async(req, res, next) => {
+    const vehicleId = req.params.id;
+    Vehicle.findByIdAndDelete(vehicleId).then(vehicle => {
+        if (vehicle == null) {
+            throw new NotFoundError("Vehicle not found");
+        }
+        return res.status(200).json(vehicle);
+    }).catch(err => {
+        next(err);
+    });
+})
 
-const patchVehicle = asyncHandler(async (req, res) => {
-  const vehicleId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(vehicleId)) {
-    throw new InvalidIdError(vehicleId);
-  }
-  const vehicleData: IVehicle = req.body;
-  const vehicle = await Vehicle.findByIdAndUpdate(vehicleId, vehicleData, {
-    new: true,
-  });
-  if (vehicle == null) {
-    throw new NotFoundError(`Vehicle with id '${vehicleId}' not found!`);
-  }
-  res.send(vehicle);
-});
+const patchVehicle = asyncHandler(async(req, res, next) => {
+    const vehicleId = req.params.id;
+    const vehicleData: VehicleDto = req.body;
+    await Vehicle.findByIdAndUpdate(vehicleId, vehicleData,{new: true} )
+        .then(vehicle => {
+            if (vehicle == null) {
+                throw new NotFoundError(`Vehicle with id '${vehicleId}' not found!`);
+            }
+            return res.send(vehicle);
+        }).catch(err => {
+            next(err);
+        });
+})
 
 export default {
-  getVehicles,
-  postVehicle,
-  getVehicle,
-  deleteVehicle,
-  patchVehicle,
-};
+    getVehicles,
+    postVehicle,
+    getVehicle,
+    deleteVehicle,
+    patchVehicle,
+}
+
