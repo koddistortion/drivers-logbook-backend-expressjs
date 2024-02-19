@@ -49,7 +49,7 @@ const deleteDriver = async (
   return Promise.resolve(driver);
 };
 
-const patchDriver = async (
+const updateDriver = async (
   id: string,
   updateData: DriverDto,
 ): Promise<Document & DriverDto & { _id: ObjectId }> => {
@@ -64,6 +64,6 @@ export const DriverService = {
   getAllDrivers,
   getDriver,
   saveDriver,
-  patchDriver,
+  updateDriver,
   deleteDriver,
 };

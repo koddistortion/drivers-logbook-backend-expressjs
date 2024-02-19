@@ -39,7 +39,7 @@ const deleteDriver = asyncHandler(async (req, res) => {
 const patchDriver = asyncHandler(async (req, res) => {
   const driverId = req.params.id;
   const driverData: DriverDto = req.body;
-  await DriverService.patchDriver(driverId, driverData).then((driver) => {
+  await DriverService.updateDriver(driverId, driverData).then((driver) => {
     res.status(200).json(driver);
   });
 });
