@@ -1,15 +1,43 @@
-import express from 'express';
+import express from "express";
 
-import driverController from '../controllers/driverController.js';
-import { postDriverValidation } from '../validators/driverValidators.js';
-import { MongoIdCheck } from '../middlewares/mongo.js';
+import controller from "../controllers/driverController.js";
+import requestValidation from "../validators/driverValidators.js";
+import validationMiddleware from "../middlewares/validation.js";
+import dbMiddleware from "../middlewares/mongo.js";
 
 const router = express.Router();
 
-router.get('/', driverController.getDrivers);
-router.get('/:id', MongoIdCheck('id'), driverController.getDriver);
-router.delete('/:id', MongoIdCheck('id'), driverController.deleteDriver);
-router.post('/', postDriverValidation(), driverController.postDriver);
-router.patch('/:id', MongoIdCheck('id'), driverController.patchDriver);
+router.get("/", controller.getDrivers);
 
-export const driverRouter = router;
+router.get("/:id", dbMiddleware.checkForValidId("id"), controller.getDriver);
+
+router.delete(
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  controller.deleteDriver,
+);
+
+router.post(
+  "/",
+  requestValidation.validatePostDriver,
+  validationMiddleware.checkForErrors,
+  controller.postDriver,
+);
+
+router.put(
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  requestValidation.validatePutDriver,
+  validationMiddleware.checkForErrors,
+  controller.putDriver,
+);
+
+router.patch(
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  requestValidation.validatePatchDriver,
+  validationMiddleware.checkForErrors,
+  controller.patchDriver,
+);
+
+export default router;

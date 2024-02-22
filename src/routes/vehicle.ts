@@ -1,34 +1,43 @@
-import express from 'express';
+import express from "express";
 
-import vehicleController from '../controllers/vehicleController.js';
-import { MongoIdCheck } from '../middlewares/mongo.js';
-import {
-  patchVehicleValidation,
-  postVehicleValidation,
-} from '../validators/vehicleValidators.js';
-import { handleValidationErrors } from '../middlewares/validation.js';
+import controller from "../controllers/vehicleController.js";
+import requestValidation from "../validators/vehicleValidators.js";
+import validationMiddleware from "../middlewares/validation.js";
+import dbMiddleware from "../middlewares/mongo.js";
 
 const router = express.Router();
 
-router.get('/', vehicleController.getVehicles);
+router.get("/", controller.getVehicles);
 
-router.get('/:id', MongoIdCheck('id'), vehicleController.getVehicle);
+router.get("/:id", dbMiddleware.checkForValidId("id"), controller.getVehicle);
 
-router.delete('/:id', MongoIdCheck('id'), vehicleController.deleteVehicle);
+router.delete(
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  controller.deleteVehicle,
+);
 
 router.post(
-  '/',
-  postVehicleValidation(),
-  handleValidationErrors,
-  vehicleController.postVehicle,
+  "/",
+  requestValidation.validatePostVehicle,
+  validationMiddleware.checkForErrors,
+  controller.postVehicle,
+);
+
+router.put(
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  requestValidation.validatePutVehicle,
+  validationMiddleware.checkForErrors,
+  controller.putVehicle,
 );
 
 router.patch(
-  '/:id',
-  MongoIdCheck('id'),
-  patchVehicleValidation(),
-  handleValidationErrors,
-  vehicleController.patchVehicle,
+  "/:id",
+  dbMiddleware.checkForValidId("id"),
+  requestValidation.validatePatchVehicle,
+  validationMiddleware.checkForErrors,
+  controller.patchVehicle,
 );
 
-export const vehicleRouter = router;
+export default router;

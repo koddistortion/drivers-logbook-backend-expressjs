@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import { ValidationFailedError } from '../errors/400/validationFailedError.js';
-import { validationResult } from 'express-validator';
+import { Request, Response, NextFunction } from "express";
+import { ValidationFailedError } from "../errors/400/validationFailedError.js";
+import { validationResult } from "express-validator";
 
-export const handleValidationErrors = (
+const handleValidationErrors = (
   req: Request,
   _res: Response,
   next: NextFunction,
@@ -12,4 +12,8 @@ export const handleValidationErrors = (
     return next(new ValidationFailedError(validationErrors.array(), req.body));
   }
   next();
+};
+
+export default {
+  checkForErrors: handleValidationErrors,
 };

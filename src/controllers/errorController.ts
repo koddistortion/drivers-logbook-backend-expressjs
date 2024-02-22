@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { HttpError } from '../errors/httpError.js';
+import { NextFunction, Request, Response } from "express";
+import { HttpError } from "../errors/httpError.js";
 
-export const handleError = (
+const handleError = (
   error: HttpError,
   _req: Request,
   res: Response,
@@ -19,3 +19,5 @@ export const handleError = (
     errors: errors,
   });
 };
+
+export default handleError;

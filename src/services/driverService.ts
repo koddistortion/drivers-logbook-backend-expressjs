@@ -1,12 +1,23 @@
-import { Document } from 'mongoose';
-import { ObjectId } from 'mongodb';
+import { Document } from "mongoose";
+import { ObjectId } from "mongodb";
 
-import { Driver, DriverDto } from '../models/driver.js';
-import { NotFoundError } from '../errors/400/notFoundError.js';
-import { Vehicle } from '../models/vehicle.js';
+import { Driver, DriverDto } from "../models/driver.js";
+import { Vehicle } from "../models/vehicle.js";
+import { PaginationDetails } from "../util/pagination.js";
+import {
+  Entity,
+  EntityNotFoundError,
+} from "../errors/400/entityNotFoundError.js";
 
-const getAllDrivers = () => {
-  return Driver.find({}).exec();
+const getAllDriversCount = () => {
+  return Driver.find().countDocuments().exec();
+};
+
+const getAllDrivers = (paging: PaginationDetails) => {
+  return Driver.find({})
+    .skip(paging.itemsToSkip)
+    .limit(paging.itemsPerPage)
+    .exec();
 };
 
 const getDriver = async (
@@ -14,7 +25,7 @@ const getDriver = async (
 ): Promise<Document & DriverDto & { _id: ObjectId }> => {
   const driver = await Driver.findById(id);
   if (driver == null) {
-    return Promise.reject(new NotFoundError(`Driver with id ${id} not found!`));
+    return Promise.reject(new EntityNotFoundError(Entity.Driver, id));
   }
   return Promise.resolve(driver);
 };
@@ -33,7 +44,7 @@ const deleteDriver = async (
 ): Promise<Document & DriverDto & { _id: ObjectId }> => {
   const driver = await Driver.findByIdAndDelete(id);
   if (driver == null) {
-    return Promise.reject(new NotFoundError(`Driver with id ${id} not found!`));
+    return Promise.reject(new EntityNotFoundError(Entity.Driver, id));
   }
   const done = await Vehicle.updateMany(
     { favoriteDriver: driver },
@@ -55,12 +66,13 @@ const updateDriver = async (
 ): Promise<Document & DriverDto & { _id: ObjectId }> => {
   const driver = await Driver.findByIdAndUpdate(id, updateData, { new: true });
   if (driver == null) {
-    return Promise.reject(new NotFoundError(`Driver with id ${id} not found!`));
+    return Promise.reject(new EntityNotFoundError(Entity.Driver, id));
   }
   return Promise.resolve(driver);
 };
 
 export const DriverService = {
+  getAllDriversCount,
   getAllDrivers,
   getDriver,
   saveDriver,
