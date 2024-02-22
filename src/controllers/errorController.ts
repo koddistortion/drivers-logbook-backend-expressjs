@@ -1,13 +1,18 @@
-import { Request, Response } from "express";
-import { WebError } from "../errors/webError";
+import { NextFunction, Request, Response } from 'express';
+import { HttpError } from '../errors/httpError.js';
 
-export const handleError = (error: WebError, req: Request, res: Response) => {
+export const handleError = (
+  error: HttpError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
   console.log(error);
   const status = error.status || 500;
   const message = error.message;
   const data = error.data;
   const errors = error.errors;
-  res.status(status).json({
+  return res.status(status).json({
     status: status,
     message: message,
     data: data,

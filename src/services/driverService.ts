@@ -1,9 +1,9 @@
-import { Document } from "mongoose";
-import { ObjectId } from "mongodb";
+import { Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-import { Driver, DriverDto } from "../models/driver";
-import { NotFoundError } from "../errors/400/notFoundError";
-import { Vehicle } from "../models/vehicle";
+import { Driver, DriverDto } from '../models/driver.js';
+import { NotFoundError } from '../errors/400/notFoundError.js';
+import { Vehicle } from '../models/vehicle.js';
 
 const getAllDrivers = () => {
   return Driver.find({}).exec();

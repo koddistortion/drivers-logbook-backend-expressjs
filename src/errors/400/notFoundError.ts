@@ -1,6 +1,6 @@
-import { WebError } from "../webError";
+import { HttpError } from '../httpError.js';
 
-export class NotFoundError extends WebError {
+export class NotFoundError extends HttpError {
   constructor(message: string) {
     super(message);
     this.status = 404;

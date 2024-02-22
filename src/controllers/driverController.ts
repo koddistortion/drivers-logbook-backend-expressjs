@@ -1,48 +1,64 @@
-import asyncHandler from "express-async-handler";
-import { validationResult } from "express-validator";
+import { DriverDto } from '../models/driver.js';
 
-import { DriverDto } from "../models/driver";
-import { ValidationFailedError } from "../errors/400/validationFailedError";
+import { DriverService } from '../services/driverService.js';
+import { NextFunction, Request, Response } from 'express';
+import {
+  Entity,
+  EntityNotFoundError,
+} from '../errors/400/entityNotFoundError.js';
 
-import { DriverService } from "../services/driverService";
+const getDrivers = (_req: Request, res: Response, next: NextFunction) => {
+  DriverService.getAllDrivers()
+    .then((drivers: DriverDto[]) => {
+      return res.status(200).json(drivers);
+    })
+    .catch((err: Error) => next(err));
+};
 
-const getDrivers = asyncHandler(async (_req, res) => {
-  await DriverService.getAllDrivers().then((drivers) => {
-    return res.status(200).json(drivers);
-  });
-});
+const getDriver = (req: Request, res: Response, next: NextFunction) => {
+  const driverId = req.params['id'] ?? '';
+  DriverService.getDriver(driverId)
+    .then((driver) => {
+      if (driver == null) {
+        return next(new EntityNotFoundError(Entity.Driver, driverId));
+      }
+      return res.status(200).json(driver);
+    })
+    .catch((err) => next(err));
+};
 
-const getDriver = asyncHandler(async (req, res) => {
-  const driverId = req.params.id;
-  await DriverService.getDriver(driverId).then((driver) => {
-    return res.status(200).json(driver);
-  });
-});
+const postDriver = (req: Request, res: Response, next: NextFunction) => {
+  DriverService.saveDriver(req.body)
+    .then((driver) => {
+      return res.status(201).json(driver);
+    })
+    .catch((err) => next(err));
+};
 
-const postDriver = asyncHandler(async (req, res) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    throw new ValidationFailedError(result.array(), req.body);
-  }
-  await DriverService.saveDriver(req.body).then((driver) => {
-    return res.status(201).json(driver);
-  });
-});
+const deleteDriver = (req: Request, res: Response, next: NextFunction) => {
+  const driverId = req.params['id'] ?? '';
+  DriverService.deleteDriver(driverId)
+    .then((driver) => {
+      if (driver == null) {
+        return next(new EntityNotFoundError(Entity.Driver, driverId));
+      }
+      return res.status(200).json(driver);
+    })
+    .catch((err) => next(err));
+};
 
-const deleteDriver = asyncHandler(async (req, res) => {
-  const driverId = req.params.id;
-  await DriverService.deleteDriver(driverId).then((driver) => {
-    return res.status(200).json(driver);
-  });
-});
-
-const patchDriver = asyncHandler(async (req, res) => {
-  const driverId = req.params.id;
+const patchDriver = (req: Request, res: Response, next: NextFunction) => {
+  const driverId = req.params['id'] ?? '';
   const driverData: DriverDto = req.body;
-  await DriverService.updateDriver(driverId, driverData).then((driver) => {
-    res.status(200).json(driver);
-  });
-});
+  DriverService.updateDriver(driverId, driverData)
+    .then((driver) => {
+      if (driver == null) {
+        return next(new EntityNotFoundError(Entity.Driver, driverId));
+      }
+      res.status(200).json(driver);
+    })
+    .catch((err) => next(err));
+};
 
 export default {
   getDrivers,

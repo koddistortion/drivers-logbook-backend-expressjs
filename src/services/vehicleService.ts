@@ -1,11 +1,19 @@
-import { Document } from "mongoose";
-import { ObjectId } from "mongodb";
+import { Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-import { Vehicle, VehicleDto } from "../models/vehicle";
-import { NotFoundError } from "../errors/400/notFoundError";
+import { Vehicle, VehicleDto } from '../models/vehicle.js';
+import { NotFoundError } from '../errors/400/notFoundError.js';
+import { PaginationDetails } from '../util/pagination.js';
 
-const getAllVehicles = () => {
-  return Vehicle.find({}).exec();
+const getAllVehiclesCount = () => {
+  return Vehicle.find().countDocuments().exec();
+};
+
+const getAllVehicles = (page: PaginationDetails) => {
+  return Vehicle.find({})
+    .skip(page.itemsToSkip)
+    .limit(page.itemsPerPage)
+    .exec();
 };
 
 const getVehicle = async (
@@ -24,8 +32,7 @@ const saveVehicle = (
   body: VehicleDto,
 ): Promise<Document & VehicleDto & { _id: ObjectId }> => {
   const vehicle = new Vehicle();
-  vehicle.name = body.name;
-  vehicle.brand = body.brand;
+  vehicle.fill(body);
   return vehicle.save();
 };
 
@@ -57,6 +64,7 @@ const updateVehicle = async (
 };
 
 export const VehicleService = {
+  getAllVehiclesCount,
   getAllVehicles,
   getVehicle,
   saveVehicle,
