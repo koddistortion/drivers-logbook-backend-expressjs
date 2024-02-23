@@ -1,13 +1,13 @@
-import { Document } from "mongoose";
-import { ObjectId } from "mongodb";
+import { Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-import { Driver, DriverDto } from "../models/driver.js";
-import { Vehicle } from "../models/vehicle.js";
-import { PaginationDetails } from "../util/pagination.js";
+import { Driver, DriverDto } from '../models/driver.js';
+import { Vehicle } from '../models/vehicle.js';
+import { PaginationDetails } from '../util/pagination.js';
 import {
   Entity,
   EntityNotFoundError,
-} from "../errors/400/entityNotFoundError.js";
+} from '../errors/400/entityNotFoundError.js';
 
 const getAllDriversCount = () => {
   return Driver.find().countDocuments().exec();

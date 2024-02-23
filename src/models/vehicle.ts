@@ -3,6 +3,7 @@ import { DriverDto } from './driver.js';
 
 export interface VehicleDto extends Document {
   name: string;
+  modelName: string;
   brand: string;
   vin: string;
   licensePlate: string;
@@ -10,12 +11,14 @@ export interface VehicleDto extends Document {
   purchaseDate: Date;
   dateOfPurchase: Date;
   favoriteDriver: Types.ObjectId | DriverDto;
-
-  fill(dto: VehicleDto): void;
 }
 
 const VehicleSchema: Schema<VehicleDto> = new Schema({
   name: {
+    type: String,
+    required: true,
+  },
+  modelName: {
     type: String,
     required: true,
   },
@@ -50,15 +53,5 @@ const VehicleSchema: Schema<VehicleDto> = new Schema({
     required: false,
   },
 });
-
-VehicleSchema.methods['fill'] = function (dto: VehicleDto) {
-  this['name'] = dto.name;
-  this['brand'] = dto.brand;
-  this['licensePlate'] = dto.licensePlate;
-  this['initialMileage'] = dto.initialMileage;
-  this['dateOfPurchase'] = dto.dateOfPurchase;
-  this['registrationDate'] = dto.purchaseDate;
-  this['favoriteDriver'] = dto.favoriteDriver;
-};
 
 export const Vehicle: Model<VehicleDto> = model('Vehicle', VehicleSchema);

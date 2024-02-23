@@ -1,9 +1,12 @@
-import { NotFoundError } from "./notFoundError.js";
+import { NotFoundError } from './notFoundError.js';
 
 export enum Entity {
-  Vehicle = "vehicle",
-  Driver = "driver",
-  Location = "location",
+  Vehicle = 'vehicle',
+  Driver = 'driver',
+  Location = 'location',
+  Workshop = 'workshop',
+  CarWash = 'car wash',
+  GasStation = 'gas station',
 }
 
 export class EntityNotFoundError extends NotFoundError {

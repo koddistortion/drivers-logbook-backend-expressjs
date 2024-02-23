@@ -1,15 +1,9 @@
 import { model, Schema, Model, Document } from 'mongoose';
+import { Address } from './address.js';
 
-export interface LocationDto extends Document {
+export interface LocationDto extends Address, Document {
   name: string;
   description: string;
-  addressLine1: string;
-  addressLine2: string;
-  country: string;
-  zipCode: string;
-  city: string;
-
-  fill(dto: LocationDto): void;
 }
 
 const LocationSchema: Schema<LocationDto> = new Schema({
@@ -42,15 +36,5 @@ const LocationSchema: Schema<LocationDto> = new Schema({
     required: true,
   },
 });
-
-LocationSchema.methods['fill'] = function (dto: LocationDto) {
-  this['name'] = dto.name;
-  this['description'] = dto.description;
-  this['addressLine1'] = dto.addressLine1;
-  this['addressLine2'] = dto.addressLine2;
-  this['zipCode'] = dto.zipCode;
-  this['country'] = dto.country;
-  this['city'] = dto.city;
-};
 
 export const Location: Model<LocationDto> = model('Location', LocationSchema);
