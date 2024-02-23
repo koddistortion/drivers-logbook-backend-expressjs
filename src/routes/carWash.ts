@@ -1,6 +1,6 @@
 import express from 'express';
 import dbMiddleware from '../middlewares/mongo.js';
-import controller from '../controllers/carwashController.js';
+import controller from '../controllers/carWashController.js';
 import requestValidation from '../validators/carWashValidators.js';
 import validationMiddleware from '../middlewares/validation.js';
 
