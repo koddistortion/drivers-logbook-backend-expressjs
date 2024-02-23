@@ -54,7 +54,7 @@ const patchWorkshop = (req: Request, res: Response, next: NextFunction) => {
     .catch((err: Error) => next(err));
 };
 
-const putWorkshop = postWorkshop;
+const putWorkshop = patchWorkshop;
 
 export default {
   getWorkshops,

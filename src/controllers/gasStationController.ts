@@ -57,7 +57,7 @@ const patchGasStation = (req: Request, res: Response, next: NextFunction) => {
     .catch((err: Error) => next(err));
 };
 
-const putGasStation = postGasStation;
+const putGasStation = patchGasStation;
 
 export default {
   getGasStations,

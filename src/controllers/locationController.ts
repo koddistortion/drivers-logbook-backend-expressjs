@@ -53,7 +53,7 @@ const patchLocation = (req: Request, res: Response, next: NextFunction) => {
     .catch((err: Error) => next(err));
 };
 
-const putLocation = postLocation;
+const putLocation = patchLocation;
 
 export default {
   getLocations,
