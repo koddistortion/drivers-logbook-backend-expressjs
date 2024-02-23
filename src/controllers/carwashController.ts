@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { Pagination, PaginationDetails } from '../util/pagination.js';
-import { NotImplementedError } from '../errors/500/notImplementedError.js';
-import { GasStationDto } from '../models/gasStation.js';
-import { GasStationService } from '../services/gasStationService.js';
 import { CarWashService } from '../services/carWashService.js';
+import { CarWashDto } from '../models/carwash.js';
+import { LocationDto } from '../models/location.js';
 
 const getCarWashes = (req: Request, res: Response, next: NextFunction) => {
   CarWashService.getAllCarWashCount()
@@ -13,11 +12,9 @@ const getCarWashes = (req: Request, res: Response, next: NextFunction) => {
         getCarWashesCount,
       );
       Pagination.addHeaderLinks(req, res, paging);
-      GasStationService.getAllGasStations(paging).then(
-        (gasStations: GasStationDto[]) => {
-          return res.status(200).json(gasStations);
-        },
-      );
+      CarWashService.getAllCarWash(paging).then((carWashes: CarWashDto[]) => {
+        return res.status(200).json(carWashes);
+      });
     })
     .catch((err: Error) => next(err));
 };
@@ -25,27 +22,41 @@ const getCarWashes = (req: Request, res: Response, next: NextFunction) => {
 const getCarWash = (req: Request, res: Response, next: NextFunction) => {
   const carWashId = req.params['id'] ?? '';
   CarWashService.getCarWash(carWashId)
-    .then((location) => {
-      return res.status(200).json(location);
+    .then((carWash) => {
+      return res.status(200).json(carWash);
     })
     .catch((err) => next(err));
 };
 
-const postCarWash = (_req: Request, _res: Response, next: NextFunction) => {
-  next(new NotImplementedError());
+const postCarWash = (req: Request, res: Response, next: NextFunction) => {
+  CarWashService.saveCarWash(req.body)
+    .then((carWash) => {
+      res.status(201).json(carWash);
+    })
+    .catch((err) => next(err));
 };
 
-const putCarWash = (_req: Request, _res: Response, next: NextFunction) => {
-  next(new NotImplementedError());
+const deleteCarWash = (req: Request, res: Response, next: NextFunction) => {
+  const carWashId = req.params['id'] ?? '';
+  CarWashService.deleteCarWash(carWashId)
+    .then((carWash) => {
+      return res.status(200).json(carWash);
+    })
+    .catch((err: Error) => next(err));
 };
 
-const patchCarWash = (_req: Request, _res: Response, next: NextFunction) => {
-  next(new NotImplementedError());
+const patchCarWash = (req: Request, res: Response, next: NextFunction) => {
+  const carWashId = req.params['id'] ?? '';
+  const carWashData: LocationDto = req.body;
+  CarWashService.updateCarWash(carWashId, carWashData)
+    .then((carWash) => {
+      return res.status(200).json(carWash);
+    })
+    .catch((err: Error) => next(err));
 };
 
-const deleteCarWash = (_req: Request, _res: Response, next: NextFunction) => {
-  next(new NotImplementedError());
-};
+const putCarWash = patchCarWash;
+
 export default {
   getCarWashes,
   getCarWash,
